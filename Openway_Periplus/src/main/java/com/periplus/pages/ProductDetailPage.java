@@ -26,28 +26,19 @@ public class ProductDetailPage extends BasePage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("preloader")));
 
-        WebElement addToCartButton = wait.until(ExpectedConditions.elementToBeClickable(addToCartButtonElement));
-        addToCartButton.click();
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        click(addToCartButtonElement);
     }
 
-    public String getAddToCartModalText() {
+    public String getAndWaitForAddToCartModalText() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         // Wait for the modal to be visible
         wait.until(ExpectedConditions.visibilityOfElementLocated(modalTextElement));
 
-        return find(modalTextElement).getText();
-    }
-
-    public void waitForAddToCartModalToDisappear() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        String modalText = find(modalTextElement).getText();
         wait.until(ExpectedConditions.invisibilityOfElementLocated(modalTextElement));
+
+        return modalText;
     }
 
     public void hoverCartIcon() {
@@ -77,10 +68,4 @@ public class ProductDetailPage extends BasePage {
                 .anyMatch(title -> title.equalsIgnoreCase(expectedBookTitle));
     }
 
-    public CartPage clickCartButton() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement cartButton = wait.until(ExpectedConditions.elementToBeClickable(cartIconElement));
-        cartButton.click();
-        return new CartPage(driver);
-    }
 }

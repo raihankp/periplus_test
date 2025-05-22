@@ -10,7 +10,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class AccountPage extends BasePage {
-    private By periplusLogoNavbarElement = By.xpath("//div[contains(@class, 'logo-new')]/a");
 
     public AccountPage(WebDriver driver) {
         super(driver);
@@ -22,12 +21,5 @@ public class AccountPage extends BasePage {
         return titleMatch("My Account");
     }
 
-    public HomePage clickHomePage() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("preloader")));
 
-        WebElement periplusLogoNavbar = wait.until(ExpectedConditions.elementToBeClickable(periplusLogoNavbarElement));
-        periplusLogoNavbar.click();
-        return new HomePage(driver);
-    }
 }
