@@ -43,14 +43,6 @@ public class BasePage {
         return Objects.equals(this.driver.getTitle(), title);
     }
 
-    public static void delay(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public HomePage clickHomePage() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("preloader")));
