@@ -9,8 +9,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 public class CartPage extends BasePage {
+    private By productRowsElement = By.cssSelector("div.row-cart-product");
     private By cartListBooksElement = By.xpath("//*[@class='row row-cart-product']//p//a");
     private By plusButton = By.xpath("(//*[@class='row row-cart-product'])[1]//div[@class='button plus']");
     private By quantityField = By.xpath("(//*[@class='row row-cart-product'])[1]//input[@class='input-number text-center']");
@@ -90,22 +92,27 @@ public class CartPage extends BasePage {
         List<WebElement> allProductPrice = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(priceElements));
 
         int totalPrice = 0;
+        List<WebElement> productRows = driver.findElements(productRowsElement);
 
-        for (WebElement productPrice : allProductPrice) {
-            String fullText = productPrice.getText().trim();  // "Rp 376,000 or 752 Points"
-            // System.out.print(fullText);
-            if (fullText.contains("Rp")) {
+        for (WebElement row : productRows) {
+            try {
+                // Get the price text (e.g., "Rp 376,000 or 752 Points")
+                WebElement priceElement = row.findElement(By.xpath(".//*[contains(text(), 'Rp')]"));
+                String fullText = priceElement.getText().trim();
                 String[] parts = fullText.split(" ");
-                if (parts.length >= 2) {
-                    String priceText = parts[1].replace(",", "").trim(); // "265000"
-                    try {
-                        int price = Integer.parseInt(priceText);
-                        totalPrice += price;
-                        // System.out.println("Parsed price: " + price);
-                    } catch (NumberFormatException e) {
-                        // System.out.println("Failed to parse price: " + priceText);
-                    }
-                }
+                String priceText = parts[1].replace(",", "").trim(); // "265000"
+                int unitPrice = Integer.parseInt(priceText);
+
+                // Get the quantity
+                WebElement qtyInput = row.findElement(By.cssSelector("input.input-number"));
+                int quantity = Integer.parseInt(Objects.requireNonNull(qtyInput.getDomProperty("value")));
+
+                // Calculate the total price
+                totalPrice += unitPrice * quantity;
+                // System.out.println("unit price = " + unitPrice + " quantity = " + quantity + " total price = " + totalPrice);
+
+            } catch (Exception e) {
+                System.out.println("Failed to process a cart item: " + e.getMessage());
             }
         }
 
@@ -121,8 +128,7 @@ public class CartPage extends BasePage {
 
         String totalText = totalPrice.getText();
         String numericText = totalText.replaceAll("[^\\d]", ""); // Hanya ambil digit
-        int totalValue = Integer.parseInt(numericText);
         // System.out.println("Total value as integer: " + totalValue);
-        return totalValue;
+        return Integer.parseInt(numericText);
     }
 }
